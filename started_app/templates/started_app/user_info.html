@@ -1,0 +1,24 @@
+{%extends "started_app/base.html"%}
+{% block header %}Пользователь {{user}}{% endblock header %}
+{% block content%}
+
+
+<ul>
+    <div>username: {{user}}</div>
+    <div>email: {{user.email}}</div>
+    <p style="font-weight: bold;">Заказы клиента:</p>
+    {% if order_list %}
+    {% for order in order_list %}
+    <li>
+            <div>{{order}}</div>
+        </li>
+{% endfor %}
+    {%else%}
+    <p>У этого пользователя нет заказов</p>
+</ul>
+{%endif%}
+<a href="{% url 'add_order' pk=object.pk %}">Добавить заказ для {{user}}</a>
+
+
+
+{% endblock content%}

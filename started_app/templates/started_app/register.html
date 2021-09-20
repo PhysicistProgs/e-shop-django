@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% extends "started_app/base.html" %}
+
+{% block header %}Регистрация{% endblock header %}
+
+{% block content %}
+
+    <form method="POST">
+        {%csrf_token%}
+        <table>
+        {{ form.as_p }}
+            </table>
+    <button type="submit">Регистрация</button>
+    </form>
+
+{{ form.errors }}
+<!--{% if is_valid %}-->
+<!--    <p class="success">Регистрация успешна</p>-->
+<!--{% endif %}-->
+<p> <a href="{% url 'index' %}">На главную</a></p>
+{% endblock content %}

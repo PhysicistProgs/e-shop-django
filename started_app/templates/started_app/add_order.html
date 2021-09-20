@@ -1,0 +1,15 @@
+{%extends "started_app/base.html"%}
+{% block header %}Создать заказ{% endblock header %}
+
+
+{% block content%}
+<form method="POST"">
+<table>
+    {%csrf_token%}
+    {{form}}
+    </table>
+    <input type="submit" value="Создать заказ">
+</form>
+
+
+{% endblock content %}

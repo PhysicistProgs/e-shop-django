@@ -1,0 +1,12 @@
+{%extends "started_app/base.html"%}
+{% block header %}Каталог{% endblock header %}
+
+{% block content%}
+
+{% for shoe in shoe_list %}
+<ul>
+<li><a href="{% url 'shoe_info' pk=shoe.pk %}">{{shoe}}</a></li>
+</ul>
+{% endfor %}
+
+{% endblock content%}

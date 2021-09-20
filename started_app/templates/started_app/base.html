@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'started_app/css/styles.css' %}">
+    <title>{% block title %}Default title {% endblock title %}</title>
+</head>
+
+<body>
+
+
+<ul id="mainmenu" class="mainmenu">
+    {% if not user.is_authenticated %}
+    <li class="right">
+        <a href="{%url 'login'%}">Войти</a>
+    </li>
+    <li class="right">
+        <a href="{%url 'register'%}">Зарегистрироваться</a>
+    </li>
+    {% else %}
+    <li class="right"><a href="{%url 'logout'%}">Выйти</a> </liclass>
+    <li class="right">{{user}}</li>
+
+    {% endif %}
+</ul>
+<br><br><br><br>
+<h1>{% block header %}{% endblock header %}</h1>
+
+<div>{% block content%}
+    {% endblock content %}</div>
+
+<div>
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+</div>
+</body>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{%extends "started_app/base.html"%}
+{% block header %}Все пользователи{% endblock header %}
+{% block content%}
+
+    <ol>
+        {% for user in user_list %}
+        <li>
+            <div><a href="{% url 'user-info' pk=user.pk %}">{{user.username}}</a></div>
+            <div>{{user.email}}</div>
+            <p></p>
+        </li>
+        {% endfor %}
+    </ol>
+
+{% endblock content%}
