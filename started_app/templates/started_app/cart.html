@@ -6,6 +6,7 @@
         <div>
             <a href="">{{product}}</a>
              {{product.price}}
+            <a href="{% url 'del_from_cart' shoe_id=product.pk %}"><button class="btn-danger small">x</button></a>
         </div>
     {% endfor %}
 <br>

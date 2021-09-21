@@ -135,3 +135,13 @@ class AddToCartView(generic.View):
         cart = Cart.objects.get(owner=request.user)
         cart.products.add(shoe)
         return redirect('cart')
+
+
+class DelFromCartView(SuccessMessageMixin, generic.View):
+
+    def get(self, request, *args, **kwargs):
+        print("kwargs:", kwargs)
+        shoe = Shoe.objects.get(pk=kwargs['shoe_id'])
+        cart = Cart.objects.get(owner=request.user)
+        cart.products.remove(shoe)
+        return redirect('cart')
