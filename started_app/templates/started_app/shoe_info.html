@@ -3,7 +3,13 @@
 {% block content%}
 
 
-<p><a href="">Добавить в корзину</a></p>
 
+<div>
+    <a href="{% url 'add_to_cart' shoe_id=shoe.pk %}">
+        <button class="btn-classic">
+            Добавить в корзину
+        </button>
+    </a>
+</div>
 
 {% endblock content%}

@@ -147,3 +147,11 @@ class Order(models.Model):
         self.date_delivered = timezone.now()
         if commit:
             self.save()
+
+
+class Cart(models.Model):
+    """
+    Store current cart. Only one cart for one user is available.
+    """
+    owner = models.OneToOneField(User, on_delete=models.DO_NOTHING)
+    products = models.ManyToManyField(Shoe, blank=True)

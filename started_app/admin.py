@@ -8,3 +8,5 @@ admin.site.register(Order)
 admin.site.register(PaymentMethod)
 admin.site.register(Material)
 admin.site.register(Brand)
+admin.site.register(Cart)
+

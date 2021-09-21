@@ -1,0 +1,24 @@
+{% extends 'started_app/base.html' %}
+{% block header %}Корзина{% endblock header %}
+
+{% block content %}
+    {% for product in products %}
+        <div>
+            <a href="">{{product}}</a>
+             {{product.price}}
+        </div>
+    {% endfor %}
+<br>
+{% if cart_number %}
+<div>
+    Сумма заказа: {{order_price}}
+</div>
+{% endif %}
+<div>
+        <a href="{% url 'index' %}">
+            <button {%if not cart_number%} disabled {% endif %} class="btn-success">
+                Оформить заказ
+            </button>
+        </a>
+    </div>
+{% endblock content %}
