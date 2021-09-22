@@ -2,16 +2,15 @@
 {% block header %}Корзина{% endblock header %}
 
 {% block content %}
-cart_number: {{cart_number}}
-products: {{products}}
-    {% for product in products %}
+
+    {% for key, value in products.items %}
         <div>
-            <a href="">{{product}}</a>
-             {{product.price}}
-            <a href="{% url 'del_from_cart' shoe_id=product.pk %}"><button class="btn-danger small">x</button></a>
+            <a href="">{{value.fields.name}}</a>
+             Цена {{value.fields.price}}
+            <a href="{% url 'del_from_cart' shoe_id=key %}"><button class="btn-danger small">x</button></a>
         </div>
     {% endfor %}
-<br>мит
+<br>
 {% if cart_number %}
 <div>
     Сумма заказа: {{order_price}}

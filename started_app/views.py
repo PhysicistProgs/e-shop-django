@@ -7,7 +7,8 @@ from .models import Order, Shoe, Cart
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.contrib.auth.models import User
-from .utils import DataMixin
+from utils import DataMixin
+from django.core import serializers
 
 
 class IndexView(DataMixin, generic.ListView):
@@ -111,18 +112,29 @@ class OrderCreate(generic.CreateView):
 class CartView(DataMixin, generic.View):
 
     def get(self, request, *args, **kwargs):
-        cart = Cart.objects.get(owner=request.user)
-        products = cart.products.all()
-        order_price = sum([product.price for product in products])
+        # print(request.session['cart'])
+        if request.user.is_authenticated:
+            cart = Cart.objects.get(owner=request.user)
+            products = cart.products.all()
+            order_price = sum([product.price for product in products])
+            template_path = 'started_app/cart.html'
+        else:
+            if 'cart' not in request.session:
+                request.session['cart'] = {}
+            # request.session['cart'] = {}
+            cart = request.session['cart']
+            products = cart
+            order_price = sum([int(i['fields']['price']) for i in cart.values()])
+            template_path = 'started_app/session_cart.html'
         context = {
-            'cart': cart,
             'products': products,
             'order_price': order_price,
             'cart_number': len(products)
         }
+
         return render(
             request,
-            'started_app/cart.html',
+            template_path,
             context
         )
 
@@ -130,18 +142,28 @@ class CartView(DataMixin, generic.View):
 class AddToCartView(generic.View):
 
     def get(self, request,  *args, **kwargs):
-        print("kwargs:", kwargs)
         shoe = Shoe.objects.get(pk=kwargs['shoe_id'])
-        cart = Cart.objects.get(owner=request.user)
-        cart.products.add(shoe)
+        if request.user.is_authenticated:
+            cart = Cart.objects.get(owner=request.user)
+            cart.products.add(shoe)
+        else:
+            if 'cart' not in request.session:
+                request.session['cart'] = {}
+            request.session['cart'][str(shoe.pk)] = serializers.serialize('python', [shoe])[0]
+            request.session.modified = True
         return redirect('cart')
 
 
 class DelFromCartView(SuccessMessageMixin, generic.View):
 
     def get(self, request, *args, **kwargs):
-        print("kwargs:", kwargs)
         shoe = Shoe.objects.get(pk=kwargs['shoe_id'])
-        cart = Cart.objects.get(owner=request.user)
-        cart.products.remove(shoe)
+        if request.user.is_authenticated:
+            cart = Cart.objects.get(owner=request.user)
+            cart.products.remove(shoe)
+        else:
+            cart = request.session['cart']
+            cart.pop(str(kwargs['shoe_id']))
+            request.session.modified = True
         return redirect('cart')
+
