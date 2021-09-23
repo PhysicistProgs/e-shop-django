@@ -7,7 +7,7 @@ from .models import Order, Shoe, Cart
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.contrib.auth.models import User
-from utils import DataMixin
+from .utils import DataMixin
 from django.core import serializers
 
 
