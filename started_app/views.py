@@ -76,6 +76,11 @@ class RegisterUserView(SuccessMessageMixin,DataMixin, generic.CreateView):
     success_url = reverse_lazy('login')
     success_message = "Регистрация прошла успешно"
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        return {**context, **c_def}
+
 
 class LoginUserView(SuccessMessageMixin, DataMixin, LoginView):
     form_class = AuthenticationForm
@@ -85,6 +90,11 @@ class LoginUserView(SuccessMessageMixin, DataMixin, LoginView):
 
     def get_success_url(self):
         return reverse_lazy('index')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        return {**context, **c_def}
 
 
 def logout_user(request):
@@ -112,7 +122,6 @@ class OrderCreate(generic.CreateView):
 class CartView(DataMixin, generic.View):
 
     def get(self, request, *args, **kwargs):
-        # print(request.session['cart'])
         if request.user.is_authenticated:
             cart = Cart.objects.get(owner=request.user)
             products = cart.products.all()
@@ -121,7 +130,6 @@ class CartView(DataMixin, generic.View):
         else:
             if 'cart' not in request.session:
                 request.session['cart'] = {}
-            # request.session['cart'] = {}
             cart = request.session['cart']
             products = cart
             order_price = sum([int(i['fields']['price']) for i in cart.values()])

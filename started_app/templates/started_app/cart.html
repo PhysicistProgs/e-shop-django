@@ -2,8 +2,12 @@
 {% block header %}Корзина{% endblock header %}
 
 {% block content %}
-cart_number: {{cart_number}}
-products: {{products}}
+    {% if not products %}
+        <div>
+            Корзина пуста.<br>
+            Хотите выбрать что-нибудь в <a href="{% url 'show_shoes' %}">каталоге</a>?
+        </div>
+    {% endif %}
     {% for product in products %}
         <div>
             <a href="">{{product}}</a>
@@ -11,7 +15,7 @@ products: {{products}}
             <a href="{% url 'del_from_cart' shoe_id=product.pk %}"><button class="btn-danger small">x</button></a>
         </div>
     {% endfor %}
-<br>мит
+<br>
 {% if cart_number %}
 <div>
     Сумма заказа: {{order_price}}
