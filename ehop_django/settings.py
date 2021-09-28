@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'phonenumber_field',
+    'debug_toolbar',
     'started_app',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -49,11 +51,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'ehop_django.urls'
 INDEX_DIR = path.join(BASE_DIR, "templates")
-print("INDEX_DIR:{}".format(INDEX_DIR))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -102,6 +104,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

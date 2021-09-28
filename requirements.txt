@@ -2,3 +2,4 @@ django
 django-phonenumber-field
 phonenumbers
 pillow
+django-debug-toolbar

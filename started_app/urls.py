@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import path, re_path
-from started_app import views
 from . import views
 
+app_name = 'started_app'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
@@ -15,7 +15,4 @@ urlpatterns = [
     path('<int:pk>/thanks/', views.ThanksView.as_view(), name='thanks'),
     path('login/', views.LoginUserView.as_view(), name='login'),
     path('logout/', views.logout_user, name='logout'),
-    path('cart/', views.CartView.as_view(), name='cart'),
-    path('add-to-cart/<int:shoe_id>', views.AddToCartView.as_view(), name='add_to_cart'),
-    path('del-from-cart/<int:shoe_id>', views.DelFromCartView.as_view(), name='del_from_cart'),
 ]

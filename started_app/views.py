@@ -1,14 +1,16 @@
 from django.contrib.auth import logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import redirect, get_object_or_404, render
-from .models import Order, Shoe, Cart
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.contrib.auth.models import User
+
+from .models import Order, Shoe
+from cart.forms import ShoeQuantityForm
+from cart.models import Cart, CartProducts
 from .utils import DataMixin
-from django.core import serializers
 
 
 class IndexView(DataMixin, generic.ListView):
@@ -62,18 +64,19 @@ class ShoeInfoView(DataMixin, generic.DetailView):
     # Show shoe info
     template_name = 'started_app/shoe_info.html'
     model = Shoe
-    context_object_name = "shoe"
+    context_object_name = 'shoe'
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super().get_context_data(**kwargs)
         c_def = self.get_user_context()
+        context['form'] = ShoeQuantityForm
         return {**c_def, **context, }
 
 
-class RegisterUserView(SuccessMessageMixin,DataMixin, generic.CreateView):
+class RegisterUserView(SuccessMessageMixin, DataMixin,  generic.CreateView):
     form_class = UserCreationForm
     template_name = 'started_app/register.html'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('started_app:login')
     success_message = "Регистрация прошла успешно"
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -85,11 +88,11 @@ class RegisterUserView(SuccessMessageMixin,DataMixin, generic.CreateView):
 class LoginUserView(SuccessMessageMixin, DataMixin, LoginView):
     form_class = AuthenticationForm
     template_name = 'started_app/login.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('started_app:index')
     success_message = 'Выполнен вход в систему'
 
     def get_success_url(self):
-        return reverse_lazy('index')
+        return reverse_lazy('started_app:index')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,7 +102,7 @@ class LoginUserView(SuccessMessageMixin, DataMixin, LoginView):
 
 def logout_user(request):
     logout(request)
-    return redirect('login')
+    return redirect('started_app:login')
 
 
 class OrderCreate(generic.CreateView):
@@ -116,62 +119,4 @@ class OrderCreate(generic.CreateView):
 
     def get_success_url(self):
         user = User.objects.get(pk=self.kwargs.get('pk'))
-        return reverse('thanks', args=(user.pk, ))
-
-
-class CartView(DataMixin, generic.View):
-
-    def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            cart = Cart.objects.get(owner=request.user)
-            products = cart.products.all()
-            order_price = sum([product.price for product in products])
-            template_path = 'started_app/cart.html'
-        else:
-            if 'cart' not in request.session:
-                request.session['cart'] = {}
-            cart = request.session['cart']
-            products = cart
-            order_price = sum([int(i['fields']['price']) for i in cart.values()])
-            template_path = 'started_app/session_cart.html'
-        context = {
-            'products': products,
-            'order_price': order_price,
-            'cart_number': len(products)
-        }
-
-        return render(
-            request,
-            template_path,
-            context
-        )
-
-
-class AddToCartView(generic.View):
-
-    def get(self, request,  *args, **kwargs):
-        shoe = Shoe.objects.get(pk=kwargs['shoe_id'])
-        if request.user.is_authenticated:
-            cart = Cart.objects.get(owner=request.user)
-            cart.products.add(shoe)
-        else:
-            if 'cart' not in request.session:
-                request.session['cart'] = {}
-            request.session['cart'][str(shoe.pk)] = serializers.serialize('python', [shoe])[0]
-            request.session.modified = True
-        return redirect('cart')
-
-
-class DelFromCartView(SuccessMessageMixin, generic.View):
-
-    def get(self, request, *args, **kwargs):
-        shoe = Shoe.objects.get(pk=kwargs['shoe_id'])
-        if request.user.is_authenticated:
-            cart = Cart.objects.get(owner=request.user)
-            cart.products.remove(shoe)
-        else:
-            cart = request.session['cart']
-            cart.pop(str(kwargs['shoe_id']))
-            request.session.modified = True
-        return redirect('cart')
-
+        return reverse('started_app:thanks', args=(user.pk, ))

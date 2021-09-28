@@ -11,18 +11,18 @@
 <ul id="mainmenu" class="mainmenu">
 
     <li class="left">
-        <a href="{% url 'cart' %}"><button class="btn-classic">Корзина({{cart_number}})</button></a>
+        <a href="{% url 'cart:cart' %}"><button class="btn-classic">Корзина({{cart_number}})</button></a>
     </li>
 
     {% if not user.is_authenticated %}
     <li class="right">
-        <a href="{%url 'login'%}"><button class="btn-success">Войти</button></a>
+        <a href="{%url 'started_app:login'%}"><button class="btn-success">Войти</button></a>
     </li>
     <li class="right">
-        <a href="{%url 'register'%}"><button class="btn-classic">Зарегистрироваться</button></a>
+        <a href="{%url 'started_app:register'%}"><button class="btn-classic">Зарегистрироваться</button></a>
     </li>
     {% else %}
-    <li class="right"><a href="{%url 'logout'%}"><button class="btn-danger">Выйти</button></a> </li>
+    <li class="right"><a href="{%url 'started_app:logout'%}"><button class="btn-danger">Выйти</button></a> </li>
     <li class="right text">{{user}}</li>
 
     {% endif %}

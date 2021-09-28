@@ -5,15 +5,23 @@
     {% if not products %}
         <div>
             Корзина пуста.<br>
-            Хотите выбрать что-нибудь в <a href="{% url 'show_shoes' %}">каталоге</a>?
+            Хотите выбрать что-нибудь в <a href="{% url 'started_app:show_shoes' %}">каталоге</a>?
         </div>
     {% endif %}
     {% for product in products %}
+
         <div>
-            <a href="">{{product}}</a>
-             {{product.price}}
-            <a href="{% url 'del_from_cart' shoe_id=product.pk %}"><button class="btn-danger small">x</button></a>
+            <a href="">{{product}}
+                {% for key, value in quantity.items%}
+                    {% if key == product.pk %}
+                        ({{value}})
+                    {% endif %}
+                {% endfor %}
+            </a>
+             Цена {{product.price}}
+            <a href="{% url 'cart:remove' shoe_id=product.pk %}"><button class="btn-danger small">x</button></a>
         </div>
+
     {% endfor %}
 <br>
 {% if cart_number %}
@@ -22,7 +30,7 @@
 </div>
 {% endif %}
 <div>
-        <a href="{% url 'index' %}">
+        <a href="{% url 'started_app:index' %}">
             <button {%if not cart_number%} disabled {% endif %} class="btn-success">
                 Оформить заказ
             </button>

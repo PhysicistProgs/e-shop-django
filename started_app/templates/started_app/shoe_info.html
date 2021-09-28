@@ -5,11 +5,20 @@
 
 
 <div>
-    <a href="{% url 'add_to_cart' shoe_id=shoe.pk %}">
-        <button class="btn-classic">
+
+    <form method="POST" action="{% url 'cart:add' shoe_id=shoe.pk %}">
+        {% csrf_token %}
+        {{form.quantity.label_tag}}
+        {{form.quantity}}
+
+<!--            <laber for="input-items-quantity">Кол-во</laber>-->
+<!--            <input type="number" id="input-items-quantity" min="1" max="10" value="1">-->
+
+        <button type="submit" class="btn-classic">
             Добавить в корзину
         </button>
-    </a>
+<!--    <a href="{% url 'cart:add' shoe_id=shoe.pk %}"></a>-->
+        </form>
 </div>
 
 {% endblock content%}

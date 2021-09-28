@@ -5,7 +5,7 @@
 
 {% for shoe in shoe_list %}
 <ul>
-<li><a href="{% url 'shoe_info' pk=shoe.pk %}">{{shoe}}</a></li>
+<li><a href="{% url 'started_app:shoe_info' pk=shoe.pk %}">{{shoe}}</a></li>
 </ul>
 {% endfor %}
 

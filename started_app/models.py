@@ -33,8 +33,8 @@ class Shoe(models.Model):
     Shoe model.
     """
     # Linking
-    material_id = models.ForeignKey(Material, null=False, on_delete=models.PROTECT)
-    brand_id = models.ForeignKey(Brand, null=False, on_delete=models.PROTECT)
+    material_id = models.ForeignKey(Material, null=False, on_delete=models.CASCADE)
+    brand_id = models.ForeignKey(Brand, null=False, on_delete=models.CASCADE)
 
     # Business logic
     name = models.CharField(max_length=50)
@@ -54,7 +54,7 @@ class ShoeImage(models.Model):
     """
     Images for Shoe model. Many to many link
     """
-    shoe_id = models.ForeignKey(Shoe, on_delete=models.PROTECT)
+    shoe_id = models.ForeignKey(Shoe, on_delete=models.CASCADE)
     image = models.ImageField()
 
 
@@ -112,8 +112,8 @@ class Order(models.Model):
     and ManyToOne with Client model.
     """
     # Linking
-    user_id = models.ForeignKey(User, on_delete=models.PROTECT)
-    # payment_method = models.ForeignKey(PaymentMethod, on_delete=models.PROTECT)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    # payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
     # shoe_id = models.ManyToManyField(Shoe)
 
     # Business logic
@@ -147,11 +147,3 @@ class Order(models.Model):
         self.date_delivered = timezone.now()
         if commit:
             self.save()
-
-
-class Cart(models.Model):
-    """
-    Store current cart. Only one cart for one user is available.
-    """
-    owner = models.OneToOneField(User, on_delete=models.DO_NOTHING)
-    products = models.ManyToManyField(Shoe, blank=True)
