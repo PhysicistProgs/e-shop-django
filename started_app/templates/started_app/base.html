@@ -10,10 +10,15 @@
 <div class="mainmenu">
 <ul id="mainmenu" class="mainmenu">
 
-    <li class="left">
+    <li class="right" id="cart">
         <a href="{% url 'cart:cart' %}"><button class="btn-classic">Корзина({{cart_number}})</button></a>
     </li>
-
+    <li>
+        <a href="{% url 'started_app:index' %}">На главную</a>
+    </li>
+    <li>
+        <a href="{% url 'started_app:show_shoes' %}">Каталог</a>
+    </li>
     {% if not user.is_authenticated %}
     <li class="right">
         <a href="{%url 'started_app:login'%}"><button class="btn-success">Войти</button></a>
