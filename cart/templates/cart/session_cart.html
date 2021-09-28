@@ -1,13 +1,6 @@
-{% extends 'started_app/base.html' %}
-{% block header %}Корзина{% endblock header %}
+{% extends 'cart/cart.html' %}
 
-{% block content %}
-    {% if not products %}
-        <div>
-            Корзина пуста.<br>
-            Хотите выбрать что-нибудь в <a href="{% url 'started_app:show_shoes' %}">каталоге</a>?
-        </div>
-    {% endif %}
+    {% block products_loop %}
     {% for key, value in products.items %}
         <div>
             <a href="">{{value.fields.name}}({{value.quantity}})</a>
@@ -15,17 +8,4 @@
             <a href="{% url 'cart:remove' shoe_id=key %}"><button class="btn-danger small">x</button></a>
         </div>
     {% endfor %}
-<br>
-{% if cart_number %}
-<div>
-    Сумма заказа: {{order_price}}
-</div>
-{% endif %}
-<div>
-        <a href="{% url 'started_app:index' %}">
-            <button {%if not cart_number%} disabled {% endif %} class="btn-success">
-                Оформить заказ
-            </button>
-        </a>
-    </div>
-{% endblock content %}
+    {% endblock products_loop %}
