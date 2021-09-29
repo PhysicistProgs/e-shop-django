@@ -18,7 +18,9 @@ class CartView(CartMixin, generic.View):
     def auth_context(request):
         cart = Cart.objects.get(owner=request.user)
         products = cart.products.all()
-        order_price = sum([product.price for product in products])
+        order_price = sum([
+            product.price * product.cartproducts_set.get(cart=cart).quantity for product in products
+        ])
         return {
             'products': products,
             'order_price': order_price,

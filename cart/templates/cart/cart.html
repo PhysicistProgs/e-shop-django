@@ -9,19 +9,14 @@
         </div>
     {% endif %}
     {% block products_loop %}
-        {% for product in products %}
-            <div>
-                <a href="">{{product}}
-                    {% for key, value in quantity.items%}
-                        {% if key == product.pk %}
-                            ({{value}})
-                        {% endif %}
-                    {% endfor %}
-                </a>
-                 Цена {{product.price}}
-                <a href="{% url 'cart:remove' shoe_id=product.pk %}"><button class="btn-danger small">x</button></a>
-            </div>
+
+        {% for thing in user.cart.cartproducts_set.all%}
+            <p>Вещь: <a href="{% url 'started_app:shoe_info' pk=thing.shoe.pk%}">{{thing.shoe}}</a><a href="{% url 'cart:remove' shoe_id=thing.shoe.pk %}">
+    <button class="btn-danger small">x</button></a></p>
+            <p>Цена: {{thing.shoe.price}} рублей</p>
+            <p>Кол-во {{thing.quantity}}</p>
         {% endfor %}
+
     {% endblock products_loop %}
 <br>
 {% if cart_number %}
@@ -30,7 +25,7 @@
 </div>
 {% endif %}
 <div>
-        <a href="{% url 'started_app:index' %}">
+        {% block order_href %}<a href="{% url 'started_app:create_order' %}">{% endblock order_href%}
             <button {%if not cart_number%} disabled {% endif %} class="btn-success">
                 Оформить заказ
             </button>

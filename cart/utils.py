@@ -10,7 +10,8 @@ class CartMixin(DataMixin):
             products = context['products_for_cart_view']
             context['quantity'] = {}
             for item in products:
-                context['quantity'][item.pk] = CartProducts.objects.get(
-                                               shoe_id=item.pk).quantity
+                context['quantity'][item.pk] = item.cartproducts_set.get(
+                    cart=self.request.user.cart
+                ).quantity
             context.pop('products_for_cart_view')
         return context

@@ -1,0 +1,22 @@
+{%extends "started_app/base.html"%}
+
+{% block header %}{{user.username}}, ваш заказ{% endblock header %}
+{% block content %}
+    <div>
+        <h3>Ваш заказ</h3>
+        <div>
+            <div>Комментарий: {{order.comment}}</div>
+            <div>Статус заказа: {{order.status}}</div>
+            <br>
+            <div><h4>Товары</h4>
+
+                {% for thing in order.orderproduct_set.all%}
+                <p><a href="{% url 'started_app:shoe_info' pk=thing.shoe.pk%}">{{thing.shoe}}</a></p>
+                <p>Цена: {{thing.price}} рублей</p>
+                <p>Кол-во: {{thing.quantity}}</p>
+                {% endfor %}
+                <p>Сумма заказа {{order_price}}</p>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

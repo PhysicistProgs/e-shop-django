@@ -8,11 +8,11 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('users/', views.ShowUsersView.as_view(), name='show-users'),
     path('<int:pk>/', views.UserInfoView.as_view(), name='user-info'),
-    path('<int:pk>/add_order/', views.OrderCreate.as_view(), name='add_order'),
+    path('create_order/', views.OrderCreate.as_view(), name='create_order'),
     path('register/', views.RegisterUserView.as_view(), name='register'),
     path('shoes/', views.ShowShoesView.as_view(), name='show_shoes'),
     path('shoes/<int:pk>', views.ShoeInfoView.as_view(), name='shoe_info'),
-    path('<int:pk>/thanks/', views.ThanksView.as_view(), name='thanks'),
+    path('<int:pk>/order/', views.OrderView.as_view(), name='thanks'),
     path('login/', views.LoginUserView.as_view(), name='login'),
     path('logout/', views.logout_user, name='logout'),
 ]

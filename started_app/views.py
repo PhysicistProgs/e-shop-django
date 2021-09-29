@@ -7,9 +7,9 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from .models import Order, Shoe
+from .models import Shoe
 from cart.forms import ShoeQuantityForm
-from cart.models import Cart, CartProducts
+from cart.models import CartProducts, Order
 from .utils import DataMixin
 
 
@@ -22,12 +22,6 @@ class IndexView(DataMixin, generic.ListView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context()
         return {**context, **c_def}
-
-
-class ThanksView(generic.DetailView):
-    # Page after adding order
-    template_name = 'started_app/thanks.html'
-    model = User
 
 
 class ShowUsersView(generic.ListView):
@@ -105,18 +99,51 @@ def logout_user(request):
     return redirect('started_app:login')
 
 
-class OrderCreate(generic.CreateView):
+class OrderView(DataMixin, generic.DetailView):
+    # Page after adding order
+    template_name = 'cart/thanks.html'
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        order_price = 0
+        for thing in self.object.orderproduct_set.all():
+            order_price += thing.quantity * thing.price
+        context.update(
+            {'order_price': order_price}
+        )
+        return {**context, **c_def}
+
+
+class OrderCreate(DataMixin, generic.CreateView):
     # Create order
     model = Order
     fields = ['comment']
-    template_name = 'started_app/add_order.html'
+    template_name = 'cart/add_order.html'
+    # success_url = reverse_lazy('thanks')
 
     def form_valid(self, form):
         # Link order with user
-        form.instance.user_id = User.objects.get(pk=self.kwargs.get('pk'))
-        Cart.objects.create(owner=form.instance.user_id)
+        form.instance.user = self.request.user
+        cart = self.request.user.cart
+        form.save()
+        for product in cart.products.all():
+            form.instance.shoes.add(
+                product,
+                through_defaults={
+                    'quantity': CartProducts.objects.get(shoe=product, cart=cart).quantity,
+                    'price': product.price
+                }
+            )
+        # clean cart after creating order
+        cart.cartproducts_set.all().delete()
         return super().form_valid(form)
 
     def get_success_url(self):
-        user = User.objects.get(pk=self.kwargs.get('pk'))
-        return reverse('started_app:thanks', args=(user.pk, ))
+        return reverse('started_app:thanks', args=(self.object.pk, ))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        return {**context, **c_def}
