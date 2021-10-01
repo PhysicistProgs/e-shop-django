@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 
 
+
+
 class Brand(models.Model):
     """
     Brand for Shoe model. One to many link.
@@ -28,6 +30,11 @@ class Material(models.Model):
         return self.name
 
 
+class AvailableShoesManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_available=True)
+
+
 class Shoe(models.Model):
     """
     Shoe model.
@@ -45,6 +52,9 @@ class Shoe(models.Model):
     # SEO
     SEO_keywords = models.CharField(max_length=255)
     SEO_description = models.CharField(max_length=255)
+
+    objects = models.Manager()
+    available_shoes = AvailableShoesManager()
 
     def __str__(self):
         return str(self.name)

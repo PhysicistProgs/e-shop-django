@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 
-from .models import Shoe
+from .models import Shoe, Material
 from cart.forms import ShoeQuantityForm
 from cart.models import CartProducts, Order
 from .utils import DataMixin
@@ -24,25 +24,6 @@ class IndexView(DataMixin, generic.ListView):
         return {**context, **c_def}
 
 
-class ShowUsersView(generic.ListView):
-    # Show all users
-    template_name = 'started_app/users.html'
-    model = User
-
-
-class UserInfoView(generic.DetailView):
-    # Show user info
-    template_name = 'started_app/user_info.html'
-    model = User
-    context_object_name = "user"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        instance = self.get_object()
-        context['order_list'] = instance.order_set.all()
-        return context
-
-
 class ShowShoesView(DataMixin, generic.ListView):
     # Show all shoes
     template_name = 'started_app/shoes.html'
@@ -52,6 +33,53 @@ class ShowShoesView(DataMixin, generic.ListView):
         context = super().get_context_data()
         c_def = self.get_user_context()
         return {**c_def, **context, }
+
+    def get_queryset(self):
+        return Shoe.objects.filter()
+
+
+class FilterView(DataMixin, generic.ListView):
+    template_name = 'started_app/shoes.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        return {**c_def, **context, }
+
+    def material_filter(self, sql_request, ):
+        return sql_request.filter(
+            material_id__name__in=self.request.GET.getlist('material')
+        )
+
+    def brand_filter(self, sql_request):
+        return sql_request.filter(
+            brand_id__name__in=self.request.GET.getlist('brand')
+        )
+
+    def price_filter(self, sql_request):
+        return sql_request.filter(
+            price__lte=self.request.GET.get('price-up-to')
+        )
+
+    def get_queryset(self):
+        sql_req = Shoe.available_shoes.filter().select_related('material_id', 'brand_id')
+        get_request = self.request.GET
+
+        filter_auto_kwargs = {
+            'material': 'material_id__name__in',
+            'brand': 'brand_id__name__in',
+            'price-up-to': 'price__lte',
+            'price-from': 'price__gte'
+        }
+
+        for keyword, value in filter_auto_kwargs.items():
+            if keyword in get_request and get_request.getlist(keyword):
+                if 'price' not in keyword:
+                    sql_req = sql_req.filter(**{value: get_request.getlist(keyword)})
+                elif get_request.getlist(keyword)[0]:
+                    sql_req = sql_req.filter(**{value: get_request.getlist(keyword)[0]})
+
+        return sql_req
 
 
 class ShoeInfoView(DataMixin, generic.DetailView):
@@ -99,51 +127,3 @@ def logout_user(request):
     return redirect('started_app:login')
 
 
-class OrderView(DataMixin, generic.DetailView):
-    # Page after adding order
-    template_name = 'cart/thanks.html'
-    model = Order
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context()
-        order_price = 0
-        for thing in self.object.orderproduct_set.all():
-            order_price += thing.quantity * thing.price
-        context.update(
-            {'order_price': order_price}
-        )
-        return {**context, **c_def}
-
-
-class OrderCreate(DataMixin, generic.CreateView):
-    # Create order
-    model = Order
-    fields = ['comment']
-    template_name = 'cart/add_order.html'
-    # success_url = reverse_lazy('thanks')
-
-    def form_valid(self, form):
-        # Link order with user
-        form.instance.user = self.request.user
-        cart = self.request.user.cart
-        form.save()
-        for product in cart.products.all():
-            form.instance.shoes.add(
-                product,
-                through_defaults={
-                    'quantity': CartProducts.objects.get(shoe=product, cart=cart).quantity,
-                    'price': product.price
-                }
-            )
-        # clean cart after creating order
-        cart.cartproducts_set.all().delete()
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse('started_app:thanks', args=(self.object.pk, ))
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context()
-        return {**context, **c_def}

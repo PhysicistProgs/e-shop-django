@@ -6,8 +6,9 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 
+from started_app.utils import DataMixin
 from .forms import ShoeQuantityForm
-from .models import Cart, CartProducts
+from .models import Cart, CartProducts, Order
 from .utils import CartMixin
 from started_app.models import Shoe
 
@@ -55,6 +56,8 @@ class CartView(CartMixin, generic.View):
         context = kwargs
         c_def = self.get_user_context()
         return {**context, **c_def}
+
+
 
 
 class AddToCartView(CartMixin, generic.View):
@@ -122,3 +125,55 @@ class DelFromCartView(SuccessMessageMixin, generic.View):
             cart.pop(str(kwargs['shoe_id']))
             request.session.modified = True
         return redirect('cart:cart')
+
+
+class OrderView(DataMixin, generic.DetailView):
+    # Page after adding order
+    template_name = 'cart/order.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        order_price = 0
+        for thing in self.object.orderproduct_set.all():
+            order_price += thing.quantity * thing.price
+        context.update(
+            {'order_price': order_price}
+        )
+        return {**context, **c_def}
+
+    def get_queryset(self):
+        a = Order.objects.filter(pk=self.kwargs['pk'])
+        return a
+
+
+class OrderCreate(DataMixin, generic.CreateView):
+    # Create order
+    model = Order
+    fields = ['comment']
+    template_name = 'cart/add_order.html'
+
+    def form_valid(self, form):
+        # Link order with user
+        form.instance.user = self.request.user
+        cart = self.request.user.cart
+        form.save()
+        for product in cart.products.all():
+            form.instance.shoes.add(
+                product,
+                through_defaults={
+                    'quantity': CartProducts.objects.get(shoe=product, cart=cart).quantity,
+                    'price': product.price
+                }
+            )
+        # clean cart after creating order
+        cart.cartproducts_set.all().delete()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('cart:order', args=(self.object.pk, ))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context()
+        return {**context, **c_def}

@@ -3,10 +3,63 @@
 
 {% block content%}
 
+
+{% if not shoe_list%}
+По вашему запросу ничего не найдено. <br>Попробуйте изменить запрос.
+{% endif %}
 {% for shoe in shoe_list %}
 <ul>
 <li><a href="{% url 'started_app:shoe_info' pk=shoe.pk %}">{{shoe}}</a></li>
+    ({{shoe.material_id}}|{{shoe.brand_id}}|{{shoe.price}})
 </ul>
 {% endfor %}
+<div>
 
+    <form method="GET" action="{% url 'started_app:filter' %}">
+        <h3>Материалы</h3>
+
+    {% for material in view.get_str_materials %}
+    <div>
+        <input value='{{material}}' type="checkbox" id="{{material}}" {% if material in view.getrequest_material %} checked {% endif %} name="material">
+        <label for="{{material}}">{{material}}</label>
+    </div>
+    {% endfor %}
+
+        <h3>Бренды</h3>
+
+    {% for brand in view.get_str_brands %}
+    <div>
+        <input value='{{brand}}' type="checkbox" id="{{brand}}" {% if brand in view.getrequest_brand %} checked {% endif %} name="brand">
+        <label for="{{brand}}">{{brand}}</label>
+    </div>
+    {% endfor %}
+
+         <h3>Страна бренда</h3>
+
+    {% for brand_country in view.get_str_brands_coutry %}
+    <div>
+        <input value='{{brand_country}}' type="checkbox" id="{{brand_country}}" {% if brand in view.getrequest_brand %} checked {% endif %} name="brand">
+        <label for="{{brand_country}}">{{brand_country}}</label>
+    </div>
+    {% endfor %}
+
+        <h3>Цена</h3>
+        <label for="price-from">От</label>
+        <input type="number" name="price-from" id="price-from"
+               {% if 'price-from' in request.GET %} value={{view.getrequest_price_from}} {% endif %}>
+        <label for="price-up-to">До</label>
+        <input type="number" name="price-up-to" id="price-up-to"
+               {% if 'price-up-to' in request.GET %} value={{view.getrequest_price_up}} {% endif %}>
+
+        <p><button class='success-btn' type="submit">
+            Применить фильтр
+        </button></p>
+        </form>
+    <br><br>
+    <div>
+        Проверяем как выглядит реквест<br>
+        <br>
+        {{view.getrequest_price}}
+    </div>
+</div>
 {% endblock content%}
