@@ -35,7 +35,7 @@ class ShowShoesView(DataMixin, generic.ListView):
         return {**c_def, **context, }
 
     def get_queryset(self):
-        return Shoe.objects.filter()
+        return Shoe.available_shoes.filter()
 
 
 class FilterView(DataMixin, generic.ListView):
@@ -46,33 +46,19 @@ class FilterView(DataMixin, generic.ListView):
         c_def = self.get_user_context()
         return {**c_def, **context, }
 
-    def material_filter(self, sql_request, ):
-        return sql_request.filter(
-            material_id__name__in=self.request.GET.getlist('material')
-        )
-
-    def brand_filter(self, sql_request):
-        return sql_request.filter(
-            brand_id__name__in=self.request.GET.getlist('brand')
-        )
-
-    def price_filter(self, sql_request):
-        return sql_request.filter(
-            price__lte=self.request.GET.get('price-up-to')
-        )
-
     def get_queryset(self):
-        sql_req = Shoe.available_shoes.filter().select_related('material_id', 'brand_id')
+        sql_req = Shoe.available_shoes.filter().select_related('material', 'brand')
         get_request = self.request.GET
 
-        filter_auto_kwargs = {
-            'material': 'material_id__name__in',
-            'brand': 'brand_id__name__in',
+        filter_dict = {
+            'material': 'material__name__in',
+            'brand': 'brand__name__in',
+            'brand_country': 'brand__country__in',
             'price-up-to': 'price__lte',
             'price-from': 'price__gte'
         }
 
-        for keyword, value in filter_auto_kwargs.items():
+        for keyword, value in filter_dict.items():
             if keyword in get_request and get_request.getlist(keyword):
                 if 'price' not in keyword:
                     sql_req = sql_req.filter(**{value: get_request.getlist(keyword)})

@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-
-
 class Brand(models.Model):
     """
     Brand for Shoe model. One to many link.
@@ -35,18 +33,56 @@ class AvailableShoesManager(models.Manager):
         return super().get_queryset().filter(is_available=True)
 
 
+class Size(models.Model):
+    SIZE_CHOICES = [
+        (35, '35'),
+        (36, '36'),
+        (37, '37'),
+        (38, '38'),
+        (39, '39'),
+        (40, '40'),
+        (41, '41'),
+        (42, '42'),
+        (43, '43'),
+        (45, '45'),
+        (46, '46'),
+        (47, '47'),
+    ]
+
+    size = models.IntegerField(choices=SIZE_CHOICES, unique=True)
+
+    def __str__(self):
+        return str(self.size)
+
+
 class Shoe(models.Model):
     """
     Shoe model.
     """
     # Linking
-    material_id = models.ForeignKey(Material, null=False, on_delete=models.CASCADE)
-    brand_id = models.ForeignKey(Brand, null=False, on_delete=models.CASCADE)
+    material = models.ForeignKey(
+        Material,
+        null=False,
+        on_delete=models.CASCADE,
+        verbose_name='Материал'
+    )
+    brand = models.ForeignKey(
+        Brand,
+        null=False,
+        on_delete=models.CASCADE,
+        verbose_name='Бренд'
+    )
+    size = models.ManyToManyField(
+        Size,
+        null=False,
+        blank=True,
+        verbose_name='Размер'
+    )
 
     # Business logic
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=1000)
-    price = models.IntegerField(null=False)
+    price = models.IntegerField(null=False, verbose_name='Цена')
     is_available = models.BooleanField(default=False)
 
     # SEO
@@ -81,23 +117,5 @@ class Category(models.Model):
     is_available = models.BooleanField()
 
 
-class Size(models.Model):
-    SIZE_CHOICES = [
-        (35, '35'),
-        (36, '36'),
-        (37, '37'),
-        (38, '38'),
-        (39, '39'),
-        (40, '40'),
-        (41, '41'),
-        (42, '42'),
-        (43, '43'),
-        (45, '45'),
-        (46, '46'),
-        (47, '47'),
-    ]
-
-    size = models.IntegerField(choices=SIZE_CHOICES)
-    shoe_id = models.ManyToManyField(Shoe)
 
 

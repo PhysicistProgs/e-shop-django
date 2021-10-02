@@ -10,11 +10,13 @@
 {% for shoe in shoe_list %}
 <ul>
 <li><a href="{% url 'started_app:shoe_info' pk=shoe.pk %}">{{shoe}}</a></li>
-    ({{shoe.material_id}}|{{shoe.brand_id}}|{{shoe.price}})
+    ({{shoe.material}}|{{shoe.brand}}|{{shoe.price}})
 </ul>
 {% endfor %}
-<div>
 
+
+
+<div>
     <form method="GET" action="{% url 'started_app:filter' %}">
         <h3>Материалы</h3>
 
@@ -38,7 +40,7 @@
 
     {% for brand_country in view.get_str_brands_coutry %}
     <div>
-        <input value='{{brand_country}}' type="checkbox" id="{{brand_country}}" {% if brand in view.getrequest_brand %} checked {% endif %} name="brand">
+        <input value='{{brand_country}}' type="checkbox" id="{{brand_country}}" {% if brand_country in view.getrequest_brandcountry %} checked {% endif %} name="brand_country">
         <label for="{{brand_country}}">{{brand_country}}</label>
     </div>
     {% endfor %}
@@ -62,4 +64,5 @@
         {{view.getrequest_price}}
     </div>
 </div>
+
 {% endblock content%}

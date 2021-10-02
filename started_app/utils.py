@@ -3,7 +3,14 @@ from .models import Shoe, Material, Brand
 
 
 class DataMixin:
-    filters = {'brand', 'material', 'brand_country', 'price'}
+
+    def get_filters(self):
+        return {
+            'brand': self.get_str_brands,
+            'material': self.get_str_materials,
+            'brand_country': self.get_str_brands_coutry,
+            'price-up-to': self.get_str_brands(),
+        }
 
     def get_user_context(self, **kwargs):
         context = kwargs
@@ -33,6 +40,9 @@ class DataMixin:
     def getrequest_brand(self):
         return self.request.GET.getlist('brand')
 
+    def getrequest_brandcountry(self):
+        return self.request.GET.getlist('brand_country')
+
     def getrequest_price_up(self):
         price = self.request.GET.getlist('price-up-to')[0]
         return price
@@ -40,4 +50,3 @@ class DataMixin:
     def getrequest_price_from(self):
         price = self.request.GET.getlist('price-from')[0]
         return price
-
