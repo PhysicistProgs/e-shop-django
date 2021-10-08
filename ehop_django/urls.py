@@ -25,4 +25,5 @@ urlpatterns = [
     path('', include('started_app.urls', namespace='started_app')),
     path('cart', include('cart.urls', namespace='cart')),
     path('admin/', admin.site.urls),
+    path('api/', include('rest_api_app.urls', namespace='api'))
 ]
