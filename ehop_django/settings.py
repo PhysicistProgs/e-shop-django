@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from os import path
+import sys
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -86,12 +87,26 @@ WSGI_APPLICATION = 'ehop_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'wezzbtll',
+        'USER': 'wezzbtll',
+        'PASSWORD': '0iOAII3Gc1as4pB4gPGNZLLV9NPkvt2f',
+        'HOST': 'lallah.db.elephantsql.com',
     }
 }
 
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': path.join(BASE_DIR, 'db.sqlite3'),
+    }
 
+# 'TEST': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': path.join(BASE_DIR, 'db.sqlite3'),
+#             'HOST': 'localhost',
+#             'PORT': ''
+#         }
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

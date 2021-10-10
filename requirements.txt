@@ -4,3 +4,4 @@ phonenumbers
 pillow
 django-debug-toolbar
 djangorestframework
+psycopg2
