@@ -5,7 +5,10 @@
 
 
 <div>
-
+    my_test_text
+    {% if shoe.is_available %}
+    <div>Нет в наличии</div>
+    {% endif %}
     <form method="POST" action="{% url 'cart:add' shoe_id=shoe.pk %}">
         {% csrf_token %}
         {{form.quantity.label_tag}}

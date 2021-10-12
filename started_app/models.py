@@ -67,8 +67,7 @@ class Shoe(models.Model):
         verbose_name='Материал'
     )
     brand = models.ForeignKey(
-        Brand,
-        null=False,
+        Brand, null=False,
         on_delete=models.CASCADE,
         verbose_name='Бренд'
     )

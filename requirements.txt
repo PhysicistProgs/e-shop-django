@@ -5,3 +5,5 @@ pillow
 django-debug-toolbar
 djangorestframework
 psycopg2
+coverage
+django-nose

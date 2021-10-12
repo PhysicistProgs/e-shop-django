@@ -128,7 +128,7 @@ class DelFromCartView(SuccessMessageMixin, generic.View):
 
 
 class OrderView(DataMixin, generic.DetailView):
-    # Page after adding order
+    # Page after adding order: show details of order
     template_name = 'cart/order.html'
 
     def get_context_data(self, **kwargs):
@@ -143,8 +143,7 @@ class OrderView(DataMixin, generic.DetailView):
         return {**context, **c_def}
 
     def get_queryset(self):
-        a = Order.objects.filter(pk=self.kwargs['pk'])
-        return a
+        return Order.objects.filter(pk=self.kwargs['pk'])
 
 
 class OrderCreate(DataMixin, generic.CreateView):
